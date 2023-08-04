@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Details</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <h1>Student Details</h1>
+  <table id="students-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Department</th>
+        <th>Register Number</th>
+        <th>Phone Number</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+button {
+  padding: 4px 8px;
+}
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+  <script>
+    // Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyAk0foljioWF7Yde0GihotbmzW_bUxLPlw",
+  authDomain: "registrationform-e4460.firebaseapp.com",
+  databaseURL: "https://registrationform-e4460-default-rtdb.firebaseio.com",
+  projectId: "registrationform-e4460",
+  storageBucket: "registrationform-e4460.appspot.com",
+  messagingSenderId: "899025377950",
+  appId: "1:899025377950:web:d9d3fb4b97edb022aab98f",
+  measurementId: "G-HJPSD2JERL"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Get a reference to the database
+const database = firebase.database();
+
+// Get the table body
+const tableBody = document.querySelector('tbody');
+
+// Load and display student details from Firebase
+database.ref('students').on('value', (snapshot) => {
+  tableBody.innerHTML = '';
+
+  snapshot.forEach((childSnapshot) => {
+    const student = childSnapshot.val();
+    const row = document.createElement('tr');
+    const nameCell = document.createElement('td');
+    const yearCell = document.createElement('td');
+    const departmentCell = document.createElement('td');
+    const regNumberCell = document.createElement('td');
+    const phoneCell = document.createElement('td');
+    const statusCell = document.createElement('td');
+    const actionCell = document.createElement('td');
+    const verifyButton = document.createElement('button');
+
+    nameCell.textContent = student.name;
+    yearCell.textContent = student.year;
+    departmentCell.textContent = student.department;
+    regNumberCell.textContent = student.regNumber;
+    phoneCell.textContent = student.phone;
+    statusCell.textContent = student.status;
+    verifyButton.textContent = 'Verify';
+    verifyButton.dataset.studentId = childSnapshot.key;
+    verifyButton.addEventListener('click', verifyStudent);
+
+    row.appendChild(nameCell);
+    row.appendChild(yearCell);
+    row.appendChild(departmentCell);
+    row.appendChild(regNumberCell);
+    row.appendChild(phoneCell);
+    row.appendChild(statusCell);
+    actionCell.appendChild(verifyButton);
+    row.appendChild(actionCell);
+
+    tableBody.appendChild(row);
+  });
+});
+
+// Verify student
+function verifyStudent(event) {
+  const studentId = event.target.dataset.studentId;
+  const studentRef = database.ref('students').child(studentId);
+  studentRef.update({ status: 'verified' })
+    .then(() => {
+      alert('Student verified successfully!');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+  </script>
+</body>
+</html>

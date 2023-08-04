@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Registration Form</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Student Registration Form</h2>
+    <form id="registrationForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="year">Year:</label>
+      <input type="text" id="year" required>
+
+      <label for="department">Department:</label>
+      <input type="text" id="department" required>
+
+      <label for="regNumber">Register Number:</label>
+      <input type="text" id="regNumber" required>
+
+      <label for="phoneNumber">Phone Number:</label>
+      <input type="text" id="phoneNumber" required>
+
+      <label for="image">Image:</label>
+      <input type="file" id="image" accept="image/*">
+
+      <button type="button" onclick="addStudent()">Add</button>
+    </form>
+  </div>
+<style>
+  .container {
+  width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+h2 {
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input, button {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+</style>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+  <script >
+    var firebaseConfig = {
+      apiKey: "AIzaSyAk0foljioWF7Yde0GihotbmzW_bUxLPlw",
+  authDomain: "registrationform-e4460.firebaseapp.com",
+  databaseURL: "https://registrationform-e4460-default-rtdb.firebaseio.com",
+  projectId: "registrationform-e4460",
+  storageBucket: "registrationform-e4460.appspot.com",
+  messagingSenderId: "899025377950",
+  appId: "1:899025377950:web:d9d3fb4b97edb022aab98f",
+  measurementId: "G-HJPSD2JERL"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+// Get a reference to the database
+var database = firebase.database();
+
+// Function to add a student
+function addStudent() {
+  var name = document.getElementById("name").value;
+  var year = document.getElementById("year").value;
+  var department = document.getElementById("department").value;
+  var regNumber = document.getElementById("regNumber").value;
+  var phone = document.getElementById("phoneNumber").value;
+
+  // Push the student details to the database
+  var studentsRef = database.ref("students");
+  var newStudentRef = studentsRef.push();
+  newStudentRef.set({
+    name: name,
+    year: year,
+    department: department,
+    regNumber: regNumber,
+    phone: phone
+  })
+  .then(function() {
+    alert("Student added successfully!");
+    window.location.href = "another_page.html"; // Redirect to another page
+  })
+  .catch(function(error) {
+    console.log("Error adding student: " + error.message);
+  });
+}
+  </script>
+</body>
+</html>

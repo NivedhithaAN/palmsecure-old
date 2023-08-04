@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0">
+		<title>Palm secure</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container2">
+      <img id="logo2" src="PALMSECURE LOGO2.png" alt="Logo">
+    </div>
+    
+   
+    <select id="userType">
+      <option>Select user type </option>
+      <option value="user">Student</option>
+      <option value="admin">Admin</option>
+    </select>
+    
+          <button id="nextButton">Next</button>
+         
+  
+  
+    <script >
+       window.addEventListener('DOMContentLoaded', (event) => {
+      const nextButton = document.getElementById('nextButton');
+      const userTypeSelect = document.getElementById('userType');
+    
+      nextButton.addEventListener('click', () => {
+        const selectedOption = userTypeSelect.value;
+        if (selectedOption === 'user') {
+          window.location.href = 'index.html';
+        } else if (selectedOption === 'admin') {
+          window.location.href = 'login.html';
+        }
+      });
+    });
+    </script>
+  </body>
+  </html>
+ 
