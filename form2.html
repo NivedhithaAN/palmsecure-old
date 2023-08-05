@@ -2,11 +2,11 @@
 <html>
 <head>
   <title>Student Registration Form</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="student.css">
 </head>
 <body>
+  <h2>Student Registration Form</h2>
   <div class="container">
-    <h2>Student Registration Form</h2>
     <form id="registrationForm">
       <label for="name">Name:</label>
       <input type="text" id="name" required>
@@ -23,12 +23,14 @@
       <label for="phoneNumber">Phone Number:</label>
       <input type="text" id="phoneNumber" required>
 
-      <label for="image">Image:</label>
-      <input type="file" id="image" accept="image/*">
+      <label for="text">Email id:</label>
+      <input type="email" id="email" required>
 
-      <button type="button" onclick="addStudent()">Add</button>
+      <label for="phoneNumber">password:</label>
+      <input type="password" id="pwd" required>
     </form>
   </div>
+  <button type="button" onclick="addStudent()">Add</button>
 <style>
   .container {
   width: 400px;
@@ -36,7 +38,26 @@
   padding: 20px;
   border: 1px solid #ccc;
 }
+.container {
+      width: 500px;
+      margin: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      /* Add scroll bar properties */
+      overflow: auto;
+      height: 1200px; /* Adjust this value as needed */
+    }
+    .container::-webkit-scrollbar {
+      width: 0;
+    }
 
+    .container::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background-color: #888;
+    }
 h2 {
   text-align: center;
 }
@@ -53,11 +74,14 @@ input, button {
 }
 
 button {
+  width: 400px;
+  margin-bottom: 37px;
   background-color: #4CAF50;
   color: white;
   border: none;
 }
 </style>
+
   <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
   <script >
@@ -76,7 +100,21 @@ firebase.initializeApp(firebaseConfig);
 
 // Get a reference to the database
 var database = firebase.database();
-
+function checkDuplicateRegistration(regNumber) {
+      return new Promise((resolve, reject) => {
+        database.ref('students').orderByChild('regNumber').equalTo(regNumber).once('value', (snapshot) => {
+          if (snapshot.exists()) {
+            reject('Student with the same registration number already exists!');
+          } else {
+            resolve();
+          }
+        });
+      });
+    }
+    function validateEmail(email) {
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
 // Function to add a student
 function addStudent() {
   var name = document.getElementById("name").value;
@@ -84,25 +122,45 @@ function addStudent() {
   var department = document.getElementById("department").value;
   var regNumber = document.getElementById("regNumber").value;
   var phone = document.getElementById("phoneNumber").value;
-
+  var email = document.getElementById("email").value;
+  var pwd = document.getElementById("pwd").value;
+  
+  if (!name || !year || !department || !regNumber || !phone || !email ||!pwd) {
+        alert("Please fill in all the fields.");
+        return;
+      }
+      if (!validateEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
   // Push the student details to the database
-  var studentsRef = database.ref("students");
-  var newStudentRef = studentsRef.push();
-  newStudentRef.set({
-    name: name,
-    year: year,
-    department: department,
-    regNumber: regNumber,
-    phone: phone
-  })
-  .then(function() {
-    alert("Student added successfully!");
-    window.location.href = "another_page.html"; // Redirect to another page
-  })
-  .catch(function(error) {
-    console.log("Error adding student: " + error.message);
-  });
-}
+  checkDuplicateRegistration(regNumber)
+        .then(() => {
+          // Push the student details to the database
+          var studentsRef = database.ref("students");
+          var newStudentRef = studentsRef.push();
+          newStudentRef.set({
+            name: name,
+            year: year,
+            department: department,
+            regNumber: regNumber,
+            phone: phone,
+            email:email,
+            pwd:pwd,
+            status: 'Pending'
+          })
+          .then(function() {
+            alert("Student added successfully!");
+            window.location.href = "another_page.html"; // Redirect to another page
+          })
+          .catch(function(error) {
+            console.log("Error adding student: " + error.message);
+          });
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
   </script>
 </body>
 </html>

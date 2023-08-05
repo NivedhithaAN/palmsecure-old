@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Palm secure</title>
+  <link rel="stylesheet" href="student.css">
+</head>
+
+<body>
+
+  <html>
+
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="/PALMSECURE LOGO2.png" alt="Logo">
+      </div>
+      <ul class="menu">
+        <li><a href="palm-secureapp\home.html">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </body>
+
+  </html>
+  <!-- container div -->
+  <div class="container">
+
+    <!-- container div -->
+    <!-- upper button section to select
+            the login or signup form -->
+    <div class="slider"></div>
+    <div class="btn">
+      <button class="login">Login</button>
+      <button class="signup">Signup</button>
+    </div>
+    <!-- Form section that contains the
+            login and the signup form -->
+    <div class="form-section">
+
+      <!-- login form -->
+      <form id="loginForm">
+        <div class="login-box">
+          <input type="email" class="email ele" placeholder="youremail@example.com" name="username" required>
+          <input type="password" class="password ele" placeholder="password" name="password" required>
+          <button type="submit" id="logindata" name="logindata" class="clkbtn">Login</button>
+        </div>
+      </form>
+      <!-- signup form -->
+
+      <div class="signup-box" >
+
+        <input type="text" class="name ele" placeholder="Enter your name" id="name">
+        <input type="text" class="department ele" placeholder="Department" id="department">
+        <input type="text" class="year ele" placeholder="Year" id="year">
+        <input type="text" class="registerNumber ele" placeholder="Register Number" id="regNumber">
+        <input type="tel" class="phoneNumber ele" placeholder="Phone Number" id="phoneNumber">
+        <input type="email" id="email" class="email ele" placeholder="youremail@example.com">
+        <input type="password" class="password ele" placeholder="password" id="pwd">
+        <!-- <input type="password" class="password ele" placeholder="confirm password" id="psw"> -->
+
+      
+        <button type="button" class="clkbtn" onclick="addStudent()">Register</button>
+        </div>
+      </div>
+      <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+      <script >
+        var firebaseConfig = {
+          apiKey: "AIzaSyAk0foljioWF7Yde0GihotbmzW_bUxLPlw",
+      authDomain: "registrationform-e4460.firebaseapp.com",
+      databaseURL: "https://registrationform-e4460-default-rtdb.firebaseio.com",
+      projectId: "registrationform-e4460",
+      storageBucket: "registrationform-e4460.appspot.com",
+      messagingSenderId: "899025377950",
+      appId: "1:899025377950:web:d9d3fb4b97edb022aab98f",
+      measurementId: "G-HJPSD2JERL"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    
+    // Get a reference to the database
+    var database = firebase.database();
+    function checkDuplicateRegistration(regNumber) {
+          return new Promise((resolve, reject) => {
+            database.ref('students').orderByChild('regNumber').equalTo(regNumber).once('value', (snapshot) => {
+              if (snapshot.exists()) {
+                reject('Student with the same registration number already exists!');
+              } else {
+                resolve();
+              }
+            });
+          });
+        }
+        function validateEmail(email) {
+          var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+    // Function to add a student
+    function addStudent() {
+      var name = document.getElementById("name").value;
+      var year = document.getElementById("year").value;
+      var department = document.getElementById("department").value;
+      var regNumber = document.getElementById("regNumber").value;
+      var phone = document.getElementById("phoneNumber").value;
+      var email = document.getElementById("email").value;
+      var pwd = document.getElementById("pwd").value;
+      
+      if (!name || !year || !department || !regNumber || !phone || !email ||!pwd) {
+            alert("Please fill in all the fields.");
+            return;
+          }
+          if (!validateEmail(email)) {
+            alert("Please enter a valid email address.");
+            return;
+          }
+      // Push the student details to the database
+      checkDuplicateRegistration(regNumber)
+            .then(() => {
+              // Push the student details to the database
+              var studentsRef = database.ref("students");
+              var newStudentRef = studentsRef.push();
+              newStudentRef.set({
+                name: name,
+                year: year,
+                department: department,
+                regNumber: regNumber,
+                phone: phone,
+                email:email,
+                pwd:pwd,
+                status: 'Pending'
+              })
+              .then(function() {
+                alert("Student added successfully!");
+                window.location.href = "another_page.html"; // Redirect to another page
+              })
+              .catch(function(error) {
+                console.log("Error adding student: " + error.message);
+              });
+            })
+            .catch((error) => {
+              alert(error);
+            });
+        }
+      </script>
+      
+       <script>
+    //sliding
+    let signup = document.querySelector(".signup");
+    let login = document.querySelector(".login");
+    let slider = document.querySelector(".slider");
+    let formSection = document.querySelector(".form-section");
+
+    signup.addEventListener("click", () => {
+      slider.classList.add("moveslider");
+      formSection.classList.add("form-section-move");
+    });
+
+    login.addEventListener("click", () => {
+      slider.classList.remove("moveslider");
+      formSection.classList.remove("form-section-move");
+    });
+  </script>
+
+</body>
+
+</html>

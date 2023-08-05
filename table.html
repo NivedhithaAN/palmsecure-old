@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Student Details</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="student.css">
 </head>
 <body>
   <h1>Student Details</h1>
@@ -14,6 +14,7 @@
         <th>Department</th>
         <th>Register Number</th>
         <th>Phone Number</th>
+        <th>Email</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
@@ -49,6 +50,13 @@ th {
 button {
   padding: 4px 8px;
 }
+.verified-row {
+      background-color: #C8E6C9; /* Green color */
+    }
+    .not-verified-row {
+      background-color: #FFCDD2; /* Red color */
+    }
+    
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
@@ -87,27 +95,41 @@ database.ref('students').on('value', (snapshot) => {
     const departmentCell = document.createElement('td');
     const regNumberCell = document.createElement('td');
     const phoneCell = document.createElement('td');
+    const emailCell = document.createElement('td');
     const statusCell = document.createElement('td');
     const actionCell = document.createElement('td');
     const verifyButton = document.createElement('button');
+    const deleteButton = document.createElement('button');
 
     nameCell.textContent = student.name;
     yearCell.textContent = student.year;
     departmentCell.textContent = student.department;
     regNumberCell.textContent = student.regNumber;
     phoneCell.textContent = student.phone;
+    emailCell.textContent= student.email;
     statusCell.textContent = student.status;
     verifyButton.textContent = 'Verify';
     verifyButton.dataset.studentId = childSnapshot.key;
     verifyButton.addEventListener('click', verifyStudent);
 
+    deleteButton.textContent = 'Delete';
+    deleteButton.dataset.studentId = childSnapshot.key;
+    deleteButton.addEventListener('click', deleteStudent);
+    if (student.status === 'verified') {
+          row.classList.add('verified-row');
+        }
+        else {
+          row.classList.add('not-verified-row');
+        }
     row.appendChild(nameCell);
     row.appendChild(yearCell);
     row.appendChild(departmentCell);
     row.appendChild(regNumberCell);
     row.appendChild(phoneCell);
+    row.appendChild(emailCell);
     row.appendChild(statusCell);
     actionCell.appendChild(verifyButton);
+    actionCell.appendChild(deleteButton);
     row.appendChild(actionCell);
 
     tableBody.appendChild(row);
@@ -126,7 +148,17 @@ function verifyStudent(event) {
       console.error(error);
     });
 }
-
+function deleteStudent(event) {
+      const studentId = event.target.dataset.studentId;
+      const studentRef = database.ref('students').child(studentId);
+      studentRef.remove()
+        .then(() => {
+          alert('Student deleted successfully!');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   </script>
 </body>
 </html>
